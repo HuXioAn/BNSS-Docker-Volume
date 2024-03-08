@@ -1,0 +1,1 @@
+在docker中新建一个certificatesVolume的卷，将certificates里的文件全部导入，生成container的时候会用到

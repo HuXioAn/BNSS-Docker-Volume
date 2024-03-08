@@ -1,0 +1,13 @@
+创建container
+docker run -it --cap-add=NET_ADMIN --device /dev/net/tun --name <container-name> zoctyfs/openvpnclientg8acme:1.0  /bin/bash
+
+docker exec -it <container-name>  /bin/bash
+
+
+修改/etc/openvpn/client.conf中，改为运行server所在路由器的WAN和端口
+remote <WAN> <PORT>
+
+
+启动client端
+openvpn --config /etc/openvpn/client.conf
+

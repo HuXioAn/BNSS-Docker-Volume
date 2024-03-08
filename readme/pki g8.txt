@@ -1,0 +1,49 @@
+docker run -it --name <container-name>  -v certificatesVolume:/opt/certificates  zoctyfs/pkig8acme:1.0 /bin/bash
+
+docker exec -it <container-name> /bin/bash
+
+rootCA 颁发证书给 各个服务器
+
+openssl genrsa -out /opt/certificates/<server>.key 2048
+openssl req -new -key /opt/certificates/<server>.key -out /opt/certificates/<server>.csr
+
+C = SW, ST = ST, L = ST, O = G8, CN = <G8server>, emailAddress = <email@kth.se>
+
+openssl x509 -req -in /opt/certificates/<server>.csr  -CA /opt/certificates/rootCA.pem -CAkey /opt/root/rootCA.key -CAcreateserial -out /opt/certificates/<server>.pem -days 825 -sha256
+
+生成需要extension的证书
+openssl x509 -req -in /opt/certificates/<server>.csr  -CA /opt/certificates/rootCA.pem -CAkey /opt/root/rootCA.key -CAcreateserial -out /opt/certificates/<server>.pem -days 825 -sha256  -extfile <(echo "basicConstraints = CA:FALSE
+authorityKeyIdentifier = keyid:always, issuer:always
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+[ alt_names ]
+DNS.1 = acmeg8.com")
+
+
+intermediateCA 颁发证书给 用户终端
+
+openssl genrsa -out /opt/certificates/<terminal>.key 2048
+openssl req -new -key /opt/certificates/<terminal>.key -out /opt/certificates/<terminal>.csr
+
+C = SW, ST = ST, L = ST, O = G8, CN = <terminal>, emailAddress = <email@kth.se>
+
+openssl x509 -req -in /opt/certificates/<terminal>.csr -CA /opt/certificates/intermediateCA.pem -CAkey /opt/intermediate/intermediateCA.key -CAcreateserial -out /opt/certificates/<terminal>.pem -days 825 -sha256
+
+
+服务中使用CA证书验证时最好使用ca-chain.pem 包含了两层证书
+
+将客户端pem证书转换为p12格式
+openssl pkcs12 -export -legacy -in /opt/certificates/<terminal>.pem -inkey /opt/certificates/<terminal>.key -out /opt/certificates/<terminal>.p12 -certfile /opt/certificates/ca-chain.pem
+
+
+证书管理 CRL注销证书
+openssl ca -config /etc/ssl/openssl.cnf -revoke /opt/certificates/<revokeCert>.pem -keyfile /opt/root/rootCA.key -cert /opt/certificates/rootCA.pem
+openssl ca -config /etc/ssl/openssl.cnf -gencrl -out /opt/certificates/rootCA.crl.pem -keyfile /opt/root/rootCA.key -cert /opt/certificates/rootCA.pem
+
+
+生成dh文件
+openssl dhparam -out dh.pem 2048
+
+
+查看证书内容（不适用这里生成的p12证书）
+openssl x509 -in /opt/certificates/<cert>.pem -text -noout
