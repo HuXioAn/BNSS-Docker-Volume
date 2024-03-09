@@ -1,4 +1,4 @@
-docker run -it --cap-add=NET_ADMIN -v certificatesVolume:/opt/certificates -p 1194:1194/udp -p 80:8080/tcp --name <container-name> zoctyfs/openvpng8acme:1.0 /bin/bash
+docker run -it --cap-add=NET_ADMIN -v certificatesVolume:/opt/certificates -p 1194:1194/udp -p 80:8080/tcp --name <container-name> zoctyfs/openvpnb2bg8acme:1.0 /bin/bash
 
 下载后ctrl+p ctrl+q退出，然后重新启动docker
 
@@ -17,5 +17,5 @@ Port To: 1194
 
 如有需要，修改宿主机防火墙策略，允许所有从port1194流入的流量
 
-server.conf 在/etc/openvpn路径下
+server.conf 在/etc/openvpn路径下，默认情况不需要修改
 client.conf直接在路由器上配置
