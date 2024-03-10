@@ -1,4 +1,4 @@
-docker run -it --cap-add=NET_ADMIN -p 1194:1194/udp --name openvpnb2bg8 zoctyfs/openvpnb2bg8acme:1.0 /bin/bash
+docker run -d --cap-add=NET_ADMIN -p 1194:1194/udp --name openvpnb2bg8 zoctyfs/openvpnb2bg8acme:1.0
 
 下载后ctrl+p ctrl+q退出，然后重新启动docker
 

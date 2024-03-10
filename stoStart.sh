@@ -1,12 +1,20 @@
 #!/bin/bash
 
+ipNum=6
+expected_args=1
 
-ifconfig enp0s3:1 192.168.1.11 netmask 255.255.255.0 up
-ifconfig enp0s3:2 192.168.1.12 netmask 255.255.255.0 up
-ifconfig enp0s3:3 192.168.1.13 netmask 255.255.255.0 up
-ifconfig enp0s3:4 192.168.1.14 netmask 255.255.255.0 up
-ifconfig enp0s3:5 192.168.1.15 netmask 255.255.255.0 up
-ifconfig enp0s3:6 192.168.1.16 netmask 255.255.255.0 up
+if [ "$#" -eq "$expected_args" ]; then
+    echo "[*]Interface: $1"
+else
+    echo "[!]Enter an interface as argument."
+fi
+
+
+
+for i in $(seq 1 $ipNum); do
+    interface="$1:$i"
+    ifconfig "$interface" 192.168.1.$((10+i)) netmask 255.255.255.0 up
+done
 
 
 docker restart dns11
