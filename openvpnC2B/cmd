@@ -1,1 +1,1 @@
-docker run -d --name openvpnc2b -p 192.168.1.14:1195:1194/udp hohsu/dockovpn:1.0
+docker run --cap-add=NET_ADMIN -p 192.168.1.14:1194:1194/udp --name openvpnc2b hohsu/c2bserver
